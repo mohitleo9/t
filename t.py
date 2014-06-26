@@ -2,6 +2,7 @@
 import os
 import json
 import fileinput
+import re
 
 
 class Todo:
@@ -26,30 +27,37 @@ class Todo:
         # TODO handle exception if the file does not exist
         with open(full_file_path) as config_file:
             self.config = json.load(config_file)
-            self.todo_path = os.path.abspath(self.config['todo_path'])
-            self.todo_file = self.todo_path + '/' + self.config['todo_file']
+            todo_path = os.path.abspath(self.config['todo_path'])
+            self.todo_file = todo_path + '/' + self.config['todo_file']
 
     def add_task(self, task):
         """adds a task to the list
 
         :task: the task(str) to be added
         """
-        # open file in write append mode
+
+        # open file in append mode so we don't delete the previous contents
         # + ensures that if the file does not exist then create it
         with open(self.todo_file, 'a+') as todo_file:
             todo_file.write(task + '\n')
 
-    def del_task(self, task):
+    def list_tasks(self):
+        """lists all the tasks
+        """
+        with open(self.todo_file, 'r') as todo_file:
+            for i, task in enumerate(todo_file):
+                print str(i + 1) + ' ' + task,
+
+    def del_task(self, task_number):
         """delete a task
 
-        :task: search the task to be deleted
+        :task_number: the task_number to be deleted
         """
-        task = task + '\n'
         # the inplace redirects the stdout to file
         # so whatever we are printing is going there
         # after this loop file closes so we can print anything
-        for line in fileinput.input(self.todo_file, inplace=True):
-            if task == line:
+        for i, line in enumerate(fileinput.input(self.todo_file, inplace=True)):
+            if i == task_number - 1:
                 continue
             # trailing comma with print omits the new line char
             print line,
@@ -57,7 +65,6 @@ class Todo:
 
 def main():
     t = Todo()
-    t.del_task('aaasdf')
 
 
 if __name__ == '__main__':
