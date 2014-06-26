@@ -1,8 +1,9 @@
-#! /usr/bin/env python
+#!/usr/bin/env python
 import os
 import json
 import fileinput
 import argparse
+import sys
 
 
 class Todo:
@@ -64,19 +65,32 @@ def parse_arguments(t):
     """ parses the arguments and takes an action on todo
     :t: Todo list object
     """
+    # if no argument is passed then just list_tasks
+    if len(sys.argv) == 1:
+        t.list_tasks()
+        return
+
     parser = argparse.ArgumentParser(description='Minmal Todo list... really')
 
-    # append_const appends the const to values when it is called
-    # it is useful for checking if some argument was passed
     parser.add_argument(
         '-d', '--delete',
-        dest='values', action='append_const', const='delete',
-        help="delete the argement"
+        type=int,
+        help="delete the task number"
+    )
+
+    parser.add_argument(
+        'task_to_add', nargs='*',
+        help="if no arguments are provided then \
+        all the arguments are combined and passed to add_task"
     )
 
     args = parser.parse_args()
-    if not args.values:
-        t.list_tasks()
+
+    if args.delete:
+        t.del_task(args.delete)
+
+    if args.task_to_add:
+        t.add_task(' '.join(args.task_to_add))
 
 
 def main():
