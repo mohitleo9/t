@@ -2,7 +2,7 @@
 import os
 import json
 import fileinput
-import re
+import argparse
 
 
 class Todo:
@@ -14,7 +14,6 @@ class Todo:
     def __init__(self, config_file_path=None):
         """This takes in a config file (json) parses it
         and does the initilization
-
         :config_file_path: it takes in a path to config_file
            - (default cwd/tconfig.json)
         """
@@ -32,7 +31,6 @@ class Todo:
 
     def add_task(self, task):
         """adds a task to the list
-
         :task: the task(str) to be added
         """
 
@@ -49,8 +47,7 @@ class Todo:
                 print str(i + 1) + ' ' + task,
 
     def del_task(self, task_number):
-        """delete a task
-
+        """ deletes a task
         :task_number: the task_number to be deleted
         """
         # the inplace redirects the stdout to file
@@ -63,8 +60,28 @@ class Todo:
             print line,
 
 
+def parse_arguments(t):
+    """ parses the arguments and takes an action on todo
+    :t: Todo list object
+    """
+    parser = argparse.ArgumentParser(description='Minmal Todo list... really')
+
+    # append_const appends the const to values when it is called
+    # it is useful for checking if some argument was passed
+    parser.add_argument(
+        '-d', '--delete',
+        dest='values', action='append_const', const='delete',
+        help="delete the argement"
+    )
+
+    args = parser.parse_args()
+    if not args.values:
+        t.list_tasks()
+
+
 def main():
     t = Todo()
+    parse_arguments(t)
 
 
 if __name__ == '__main__':
