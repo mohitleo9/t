@@ -47,6 +47,11 @@ class Todo:
             for i, task in enumerate(todo_file):
                 print str(i + 1) + ' ' + task,
 
+    def clear_file(self):
+        """deletes the todo_file
+        """
+        os.remove(self.todo_file)
+
     def del_task(self, task_number):
         """ deletes a task
         :task_number: the task_number to be deleted
@@ -73,9 +78,17 @@ def parse_arguments(t):
     parser = argparse.ArgumentParser(description='Minmal Todo list... really')
 
     parser.add_argument(
-        '-d', '--delete',
+        '-d', '--done',
         type=int,
-        help="delete the task number"
+        help="delete the task number as it is finished"
+    )
+
+    parser.add_argument(
+        '--clear',
+        action='store_true',
+        help="clear the tasks and delete the file \
+        though it should rarely be used (c'mon all tasks done really??!!)\
+        "
     )
 
     parser.add_argument(
@@ -86,8 +99,10 @@ def parse_arguments(t):
 
     args = parser.parse_args()
 
-    if args.delete:
-        t.del_task(args.delete)
+    if args.done:
+        t.del_task(args.done)
+    if args.clear:
+        t.clear_file()
 
     if args.task_to_add:
         t.add_task(' '.join(args.task_to_add))
