@@ -32,8 +32,7 @@ class Todo:
 
     def add_task(self, task):
         """adds a task to the list
-        :task: the task(str) to be added
-        """
+        :task: the task(str) to be added"""
 
         # open file in append mode so we don't delete the previous contents
         # + ensures that if the file does not exist then create it
@@ -52,29 +51,46 @@ class Todo:
         """
         os.remove(self.todo_file)
 
-    def del_task(self, task_number):
-        """ deletes a task
+    def _replace_task(self, task_number, replacement=""):
+        """ replaces a task with the replacement
         :task_number: the task_number to be deleted
+        :replacement: the new task to be replaced
         """
         # the inplace redirects the stdout to file
         # so whatever we are printing is going there
         # after this loop file closes so we can print anything
         for i, line in enumerate(fileinput.input(self.todo_file, inplace=True)):
             if i == task_number - 1:
+                if replacement:
+                    print replacement
                 continue
             # trailing comma with print omits the new line char
             print line,
 
+    def del_task(self, task_number):
+        """ deletes a task
+        :task_number: the task_number to be deleted
+        """
+        self._replace_task(task_number)
+
+    def edit_task(self, task_number, replacement):
+        """ edits a task and replaces it with the replacement
+        :task_number: the task_number to be deleted
+        """
+        print task_number, replacement
+        self._replace_task(task_number, replacement)
+
+
 
 def parse_arguments(t):
     """ parses the arguments and takes an action on todo
-    :t: Todo list object
-    """
+    :t: Todo list object"""
     # if no argument is passed then just list_tasks
     if len(sys.argv) == 1:
         t.list_tasks()
         return
 
+    t.add_task
     parser = argparse.ArgumentParser(description='Minmal Todo list... really')
 
     parser.add_argument(
@@ -92,6 +108,12 @@ def parse_arguments(t):
     )
 
     parser.add_argument(
+        '-e', '--edit',
+        type=int,
+        help="edit a task example t -e 1 change the boot "
+    )
+
+    parser.add_argument(
         'task_to_add', nargs='*',
         help="if no arguments are provided then \
         all the arguments are combined and passed to add_task"
@@ -100,12 +122,18 @@ def parse_arguments(t):
     args = parser.parse_args()
 
     if args.done:
+        print args.done
         t.del_task(args.done)
+        return
     if args.clear:
         t.clear_file()
-
+        return
+    if args.edit:
+        t.edit_task(args.edit, ' '.join(args.task_to_add))
+        return
     if args.task_to_add:
         t.add_task(' '.join(args.task_to_add))
+        return
 
 
 def main():
