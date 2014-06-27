@@ -4,6 +4,7 @@ import json
 import fileinput
 import argparse
 import sys
+import re
 
 
 class Todo:
@@ -51,7 +52,7 @@ class Todo:
         """
         os.remove(self.todo_file)
 
-    def _replace_task(self, task_number, replacement=""):
+    def _replace_task(self, task_number, replacement="", regex=""):
         """ replaces a task with the replacement
         :task_number: the task_number to be deleted
         :replacement: the new task to be replaced
@@ -62,6 +63,8 @@ class Todo:
         for i, line in enumerate(fileinput.input(self.todo_file, inplace=True)):
             if i == task_number - 1:
                 if replacement:
+                    if regex:
+                        replacement = re.sub(regex, replacement, line, count=1).strip()
                     print replacement
                 continue
             # trailing comma with print omits the new line char
@@ -77,8 +80,11 @@ class Todo:
         """ edits a task and replaces it with the replacement
         :task_number: the task_number to be deleted
         """
-        print task_number, replacement
-        self._replace_task(task_number, replacement)
+        regex = ""
+        if replacement.count('/') == 3:
+            regex = r'' + replacement.split('/')[1]
+            replacement = replacement.split('/')[2]
+        self._replace_task(task_number, replacement, regex)
 
 
 
@@ -122,7 +128,6 @@ def parse_arguments(t):
     args = parser.parse_args()
 
     if args.done:
-        print args.done
         t.del_task(args.done)
         return
     if args.clear:
