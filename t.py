@@ -41,7 +41,7 @@ class Todo:
             if list_name not in self.config['todo_lists']:
                 # add a default extension
                 if '.' not in list_name:
-                    list_name += list_name + '.txt'
+                    list_name = list_name + '.txt'
                 self.config['todo_lists'].append(list_name)
 
             self.config['todo_file'] = list_name
@@ -68,7 +68,14 @@ class Todo:
         """
         with open(self.todo_file, 'r') as todo_file:
             for i, task in enumerate(todo_file):
-                print str(i + 1) + ' ' + task,
+                # assuming the last @ is for time
+                # __ is throw away
+                task, __,  time = task.rpartition('@')
+                # if the string does not has time then time contains the whole string
+                if not task:
+                    task = time
+                    time = ""
+                print str(i + 1) + ' @' + time.strip() + ' ' + task
 
     def clear_file(self):
         """deletes the todo_file
@@ -149,9 +156,10 @@ def parse_arguments(t):
 
     parser.add_argument(
         '--list',
-        type=str,
+        action='store_true',
         help="choses the specified list as the current list\
-        or creates new if it does not exist"
+        or creates new if it does not exist or \
+        prints the current filename if no argument is provided"
     )
 
     parser.add_argument(
@@ -167,6 +175,10 @@ def parse_arguments(t):
 
     # don't worry it is not a keyword
     if args.list:
+        # if user didn't provide any argument
+        if args.list == True:
+            print t.config['todo_file']
+            return
         t.add_list(args.list)
         return
     if args.done:
