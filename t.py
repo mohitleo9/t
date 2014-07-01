@@ -23,13 +23,36 @@ class Todo:
         if not config_file_path:
             config_file_path = os.getcwd()
         file_name = 'tconfig.json'
-        full_file_path = config_file_path + '/' + file_name
+        self.config_file_path = config_file_path + '/' + file_name
 
         # TODO handle exception if the file does not exist
-        with open(full_file_path) as config_file:
+        with open(self.config_file_path) as config_file:
             self.config = json.load(config_file)
             todo_path = os.path.abspath(self.config['todo_path'])
             self.todo_file = todo_path + '/' + self.config['todo_file']
+
+    def add_list(self, list_name):
+        """Adds another list file to the todo_list config_file
+        :list_name: the file name for the new list
+        """
+
+        with open(self.config_file_path, 'r+') as config_file:
+            self.config = json.load(config_file)
+            if list_name not in self.config['todo_lists']:
+                # add a default extension
+                if '.' not in list_name:
+                    list_name += list_name + '.txt'
+                self.config['todo_lists'].append(list_name)
+
+            self.config['todo_file'] = list_name
+            # write back to the file
+            config_file.seek(0)
+            config_file.write(json.dumps(self.config, indent=4, separators=(',', ':')))
+            # to delete the extra data
+            config_file.truncate()
+
+
+        pass
 
     def add_task(self, task):
         """adds a task to the list
@@ -120,13 +143,32 @@ def parse_arguments(t):
     )
 
     parser.add_argument(
+        '--add-list',
+        help="add another todo list"
+    )
+
+    parser.add_argument(
+        '--list',
+        type=str,
+        help="choses the specified list as the current list\
+        or creates new if it does not exist"
+    )
+
+    parser.add_argument(
         'task_to_add', nargs='*',
         help="if no arguments are provided then \
         all the arguments are combined and passed to add_task"
     )
 
     args = parser.parse_args()
+    if args.add_list:
+        t.add_list(args.add_list)
+        return
 
+    # don't worry it is not a keyword
+    if args.list:
+        t.add_list(args.list)
+        return
     if args.done:
         t.del_task(args.done)
         return

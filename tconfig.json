@@ -1,4 +1,11 @@
 {
-    "todo_path": ".",
-    "todo_file": "todo.txt"
+    "todo_file":"fasfas.txt",
+    "todo_lists":[
+        "todo.txt",
+        "asdfasdf.txt",
+        "asdffasdff.txt",
+        "asdff.sd",
+        "fasfas.txt"
+    ],
+    "todo_path":"."
 }
