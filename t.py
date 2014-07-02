@@ -147,6 +147,12 @@ def parse_arguments(t):
     )
 
     parser.add_argument(
+        '--list-files',
+        action='store_true',
+        help="list all to todo list names"
+    )
+
+    parser.add_argument(
         '-e', '--edit',
         type=int,
         help="edit a task example t -e 1 change the boot "
@@ -175,6 +181,11 @@ def parse_arguments(t):
     args = parser.parse_args()
     if args.add_list:
         t.add_list(args.add_list)
+        return
+
+    if args.list_files:
+        for l in t.config["todo_lists"]:
+            print l
         return
 
     # don't worry it is not a keyword
