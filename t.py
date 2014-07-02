@@ -51,9 +51,6 @@ class Todo:
             # to delete the extra data
             config_file.truncate()
 
-
-        pass
-
     def add_task(self, task):
         """adds a task to the list
         :task: the task(str) to be added"""
@@ -117,7 +114,6 @@ class Todo:
         self._replace_task(task_number, replacement, regex)
 
 
-
 def parse_arguments(t):
     """ parses the arguments and takes an action on todo
     :t: Todo list object"""
@@ -156,7 +152,8 @@ def parse_arguments(t):
 
     parser.add_argument(
         '--list',
-        action='store_true',
+        nargs='?',
+        const=True,
         help="choses the specified list as the current list\
         or creates new if it does not exist or \
         prints the current filename if no argument is provided"
@@ -175,8 +172,8 @@ def parse_arguments(t):
 
     # don't worry it is not a keyword
     if args.list:
-        # if user didn't provide any argument
-        if args.list == True:
+        # if user didn't provide any argument then just print the current file
+        if type(args.list) == bool:
             print t.config['todo_file']
             return
         t.add_list(args.list)
