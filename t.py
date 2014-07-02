@@ -38,10 +38,10 @@ class Todo:
 
         with open(self.config_file_path, 'r+') as config_file:
             self.config = json.load(config_file)
+            # add a default extension
+            if '.' not in list_name:
+                list_name = list_name + '.txt'
             if list_name not in self.config['todo_lists']:
-                # add a default extension
-                if '.' not in list_name:
-                    list_name = list_name + '.txt'
                 self.config['todo_lists'].append(list_name)
 
             self.config['todo_file'] = list_name
