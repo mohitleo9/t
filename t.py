@@ -47,7 +47,8 @@ class Todo:
             self.config['todo_file'] = list_name
             # write back to the file
             config_file.seek(0)
-            config_file.write(json.dumps(self.config, indent=4, separators=(',', ':')))
+            config_file.write(json.dumps(self.config, indent=4,
+                                         separators=(',', ':')))
             # to delete the extra data
             config_file.truncate()
 
@@ -68,7 +69,8 @@ class Todo:
                 # assuming the last @ is for time
                 # __ is throw away
                 task, __,  time = task.rpartition('@')
-                # if the string does not has time then time contains the whole string
+                # if the string does not has time then,
+                # time contains the whole string
                 if not task:
                     task = time
                     time = ""
