@@ -64,17 +64,22 @@ class Todo:
     def list_tasks(self):
         """lists all the tasks
         """
-        with open(self.todo_file, 'r') as todo_file:
-            for i, task in enumerate(todo_file):
-                # assuming the last @ is for time
-                # __ is throw away
-                task, __,  time = task.rpartition('@')
-                # if the string does not has time then,
-                # time contains the whole string
-                if not task:
-                    task = time
-                    time = ""
-                print str(i + 1) + ' @' + time.strip() + ' ' + task
+        try:
+            with open(self.todo_file, 'r') as todo_file:
+                for i, task in enumerate(todo_file):
+                    # assuming the last @ is for time
+                    # __ is throw away
+                    task, __,  time = task.rpartition('@')
+                    # if the string does not has time then,
+                    # time contains the whole string
+                    if not task:
+                        task = time
+                        time = ""
+                    print str(i + 1) + ' @' + time.strip() + ' ' + task
+
+        except Exception, __:
+            # file is empty so do nothing
+            pass
 
     def clear_file(self):
         """deletes the todo_file
