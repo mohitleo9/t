@@ -6,6 +6,7 @@ import argparse
 import sys
 import re
 import parsedatetime as pdt
+import arrow
 
 
 class Todo:
@@ -66,11 +67,11 @@ class Todo:
             # if the string does not has time then,
             # time contains the whole string
             if not task:
-                time_string = time
+                task_string = time
             else:
                 time = '@' + parse_time(time)
-                time_string = time.strip() + ' ' + task
-            todo_file.write(time_string + '\n')
+                task_string = task + ' ' + time.strip()
+            todo_file.write(task_string + '\n')
 
     def list_tasks(self):
         """lists all the tasks
@@ -78,7 +79,15 @@ class Todo:
         try:
             with open(self.todo_file, 'r') as todo_file:
                 for i, task in enumerate(todo_file):
-                    print str(i + 1) + ' ' + task,
+                    task, __,  time = task.rpartition('@')
+                    # if the string does not has time then,
+                    # time contains the whole string
+                    if not task:
+                        task_string = time
+                    else:
+                        time = arrow.get(*map(int, time.split('-'))).humanize()
+                        task_string = task + ' @' + time.strip()
+                    print str(i + 1) + ' ' + task_string
 
         except Exception, __:
             # file is empty so do nothing
