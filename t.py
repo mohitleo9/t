@@ -5,6 +5,7 @@ import fileinput
 import argparse
 import sys
 import re
+import parsedatetime as pdt
 
 
 class Todo:
@@ -59,7 +60,17 @@ class Todo:
         # open file in append mode so we don't delete the previous contents
         # + ensures that if the file does not exist then create it
         with open(self.todo_file, 'a+') as todo_file:
-            todo_file.write(task + '\n')
+            # assuming the last @ is for time
+            # __ is throw away
+            task, __,  time = task.rpartition('@')
+            # if the string does not has time then,
+            # time contains the whole string
+            if not task:
+                time_string = time
+            else:
+                time = '@' + parse_time(time)
+                time_string = time.strip() + ' ' + task
+            todo_file.write(time_string + '\n')
 
     def list_tasks(self):
         """lists all the tasks
@@ -67,15 +78,7 @@ class Todo:
         try:
             with open(self.todo_file, 'r') as todo_file:
                 for i, task in enumerate(todo_file):
-                    # assuming the last @ is for time
-                    # __ is throw away
-                    task, __,  time = task.rpartition('@')
-                    # if the string does not has time then,
-                    # time contains the whole string
-                    if not task:
-                        task = time
-                        time = ""
-                    print str(i + 1) + ' @' + time.strip() + ' ' + task
+                    print str(i + 1) + ' ' + task,
 
         except Exception, __:
             # file is empty so do nothing
@@ -119,6 +122,17 @@ class Todo:
             regex = r'' + replacement.split('/')[1]
             replacement = replacement.split('/')[2]
         self._replace_task(task_number, replacement, regex)
+
+
+def parse_time(time):
+    """parses the given time into dd-mm-yy format
+    :time: any format of natural time
+    :returns: time in normal dd-mm-yy
+    """
+    cal = pdt.Calendar()
+    time_struct = cal.parse(time)[0]
+    # year, month, day = time_struct[:3]
+    return '-'.join(map(str, time_struct[:3]))
 
 
 def parse_arguments(t):
