@@ -4,3 +4,6 @@
 ### it should be everwhere-2 it should have a native widget for mobile phones and everything should be synced by dropbox
 ### it should have simple text files
 #### it should be everywhere (think google calendar)
+
+### Installation instructions:
+    sudo pip install git+git://github.com/mohitleo9/t.git
