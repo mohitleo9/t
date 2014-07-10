@@ -23,14 +23,14 @@ class Todo:
         """
 
         if not config_file_path:
-            config_file_path = os.getcwd()
+            config_file_path = os.path.dirname(os.path.abspath(__file__))
         file_name = 'tconfig.json'
         self.config_file_path = config_file_path + '/' + file_name
 
         # TODO handle exception if the file does not exist
         with open(self.config_file_path) as config_file:
             self.config = json.load(config_file)
-            todo_path = os.path.abspath(self.config['todo_path'])
+            todo_path = os.path.abspath(os.path.expanduser(self.config['todo_path']))
             self.todo_file = todo_path + '/' + self.config['todo_file']
 
     def add_list(self, list_name):
